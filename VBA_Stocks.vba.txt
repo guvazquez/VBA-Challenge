@@ -1,0 +1,93 @@
+Sub Stocks_Summary()
+
+Dim lastrow As Double
+Dim f As Double
+Dim f2 As Double
+Dim Total As Double
+
+For Each ws In Worksheets
+
+  ws.Activate
+    
+    Cells(1, 9).Value = "Ticker"
+    Cells(1, 10).Value = "Yearly Change"
+    Cells(1, 11).Value = "Percent Change"
+    Cells(1, 12).Value = "Total Stock Volume"
+    
+    Cells(1, 16).Value = "Ticker"
+    Cells(1, 17).Value = "Value"
+    Cells(2, 15).Value = "Greatest % Increase"
+    Cells(3, 15).Value = "Greatest % Decrease"
+    Cells(4, 15).Value = "Greatest Total Value"
+    
+    lastrow = Cells(Rows.Count, 2).End(xlUp).Row
+    
+    Total = 0
+    f2 = 2
+    'Definir elprimer valor de OpenB
+    openB = Cells(2, 3).Value
+    
+    For f = 2 To lastrow
+        If Cells(f, 1) <> Cells(f + 1, 1) Then
+            Cells(f2, 9).Value = Cells(f, 1).Value
+            Total = Total + Cells(f, 7)
+            Cells(f2, 12).Value = Total
+            
+            Ychange = Cells(f, 6).Value - openB
+            Cells(f2, 10).Value = Cells(f, 6).Value - openB
+            
+            If Ychange < 0 Then
+                Cells(f2, 10).Interior.ColorIndex = 3
+            Else
+                Cells(f2, 10).Interior.ColorIndex = 43
+            End If
+                If openB = 0 Then
+                
+                Cells(f2, 11).Value = "NA"
+                
+                Else
+                    Cells(f2, 11).Value = (Cells(f, 6).Value - openB) / openB
+                    Cells(f2, 11).NumberFormat = "00.00%"
+        
+                    Total = 0
+                    f2 = f2 + 1
+                    openB = Cells(f + 1, 3).Value
+                End If
+                
+        Else
+            Total = Total + Cells(f, 7)
+        
+        End If
+    Next f
+    
+    
+   'Second table
+    lastrow = Cells(Rows.Count, 11).End(xlUp).Row
+    Dim MyMax As Double
+    
+    MyMax = Application.WorksheetFunction.Max(Range("K:K"))
+    MyMin = Application.WorksheetFunction.Min(Range("K:K"))
+    MyMaxT = Application.WorksheetFunction.Max(Range("L:L"))
+    
+    For f = 2 To lastrow
+        If Cells(f, 11) = MyMax Then
+            Cells(2, 16).Value = Cells(f, 9).Value
+            Cells(2, 17).Value = MyMax
+            Cells(2, 17).NumberFormat = "00.00%"
+        ElseIf Cells(f, 11) = MyMin Then
+            Cells(3, 16).Value = Cells(f, 9).Value
+            Cells(3, 17).Value = MyMin
+            Cells(3, 17).NumberFormat = "00.00%"
+        ElseIf Cells(f, 12) = MyMaxT Then
+            Cells(4, 16).Value = Cells(f, 9).Value
+            Cells(4, 17).Value = MyMaxT
+        
+        End If
+        
+    Next f
+    
+
+Next ws
+
+End Sub
+
